@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+	<title>Cryptology - AV4</title>
+
+	<link rel="shortcut icon" href="favicon.ico" >
+	<link rel="icon" href="obrasinf.gif" type="image/gif" >
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script src='/js/jquery/jquery.js'></script>
+	<script src='/js/twitter-bootstrap/js/bootstrap.js'></script>
+	<link rel='stylesheet' href='/js/twitter-bootstrap/css/bootstrap.css'>
+	<style>
+	    @import url('//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-theme.min.css');
+
+	    body {
+		margin: 10px;
+	    }
+	    textarea{
+		width:100%;
+		//direction:rtl;
+		display:block;
+		max-width:100%;
+		line-height:1.5;
+		padding:15px 15px 30px;
+		border-radius:3px;
+		border:1px solid #F7E98D;
+		font:13px Tahoma, cursive;
+		transition:box-shadow 0.5s ease;
+		box-shadow:0 4px 6px rgba(0,0,0,0.1);
+		font-smoothing:subpixel-antialiased;
+		background:linear-gradient(#F9EFAF, #F7E98D);
+		background:-o-linear-gradient(#F9EFAF, #F7E98D);
+		background:-ms-linear-gradient(#F9EFAF, #F7E98D);
+		background:-moz-linear-gradient(#F9EFAF, #F7E98D);
+		background:-webkit-linear-gradient(#F9EFAF, #F7E98D);
+	    }
+	</style>
+    </head>
+    <body> 
+	<div class=''>
+	    <div class="container"> 
+
+		<div class="jumbotron"> 
+		    <p class="lead">
+			Unitat 4: Xifres de Clau Compartida: Xifres de Bloc
+		    </p>
+		    <p> 
+			1. Suposeu que la clau principal de 64bits d'un xifrador DES
+			és el següent:
+
+		    </p>
+		    <form role="form">
+			<div class="form-group">
+			    <label for="keyDES">Key - 64 bits - DES</label>
+			    <input type="text" class="form-control" id="keyDES">
+			</div>  
+			<button type="submit" class="btn btn-default">Submit</button>
+		    </form>
+		    <p>
+			Trobeu la primera subclau de 48 bits és a dir K1.
+		    </p>
+		    <div class='form-group'>
+			<label for='resKeyDES'>Result: </label>
+			<textarea class='form-control' rows='10' id='resKeyDES'></textarea>
+		    </div>
+
+		    <hr>
+		    <p>
+			2. Suposeu que les claus usades amb el DES consisteixen només
+			en les lletres A-Z i tenen vuit lletres de llargada. 
+
+			Doneu una aproximació del temps que es tardaria a provar totes les claus fent servir
+			una cerca exhaustiva, suposant que cada clau pot ser provada
+			en un microsegon, Feu el mateix per claus que continguin 
+			vuit caràcters restringits a majúscules, minúscules i dígits decimals.
+		    </p>
+
+		    <div class='form-group'>
+			<label for='resKeyDESt'>Result: </label>
+			<textarea class='form-control' rows='5' id='resKeyDESt'></textarea>
+		    </div>
+		    <hr>
+		    <p>
+			3. Suposeu que la clau principal de 128 bits d'un xifrador IDEA és el seguent:
+
+		    </p>
+		    <form role='form'>
+			<div class='form-group'>
+			    <label for='keyIDEA'>Key - 128bits - IDEA</label>
+			    <input type='text' class='form-control' id='keyIDEA'>
+			</div>  
+		    </form>
+		    <p>
+			Trobeu els 16 bits que formen la segona clau de la quarta iteració, es a dir, K2^(4)
+		    </p>
+
+		    <div class='form-group'>
+			<label for='resKeyIDEAa'>Result: </label>
+			<textarea class='form-control' rows='5' id='resKeyIDEAa'></textarea>
+		    </div>
+		    <!--
+		    <hr>
+		    <p>
+			4. Per la mateixa clau inicial de l'exercici d'autoavaluació 3,
+			trobeu quina és la segona clau de desxifratge de la sisena iteració
+		    </p>  
+
+		    <div class='form-group'>
+			<label for='resKeyIDEAb'>Result: </label>
+			<textarea class='form-control' rows='5' id='resKeyIDEAb'></textarea>
+		    </div>
+		    -->
+		</div>
+	    </div>
+	</div>
+
+
+	<script>
+	    // Apartat 1
+	    var inputKeyDES = document.getElementById("keyDES");
+	    var deskeyArray = [01010000,
+		01010000,
+		01010101,
+		01000101,
+		01000010,
+		01001100,
+		01001111];
+	    var deskeyString = "0101000001010000010101010100010101000010010000010100110001001111";
+	    inputKeyDES.value = deskeyString;
+
+	    var resSec1 = document.getElementById("resKeyDES");
+	    resSec1.value = JSON.stringify({
+		init: "subClau"
+	    }).replace(/,/g, "\n").replace(/[{}]/g, "");
+
+
+	    /*
+	     * using key schedule http://en.wikipedia.org/wiki/Key_schedule
+	     */
+
+
+	    // Apartat 2
+
+	    var inputKeyIDEA = document.getElementById("keyIDEA");
+	    var ideakeyString1 = "0100100101000100010001010100000100100000011001010111001100100000";
+	    var ideaKeyString2 = "0110110001100001001000000110001101101100011000010111011001100101";
+	    inputKeyIDEA.value = (ideakeyString1 + ideaKeyString2).replace(/,/g, "\n");
+
+	    var resSec2 = document.getElementById("resKeyDESt");
+	    resSec2.value = "ASDF";
+	    // Apartat 3
+
+
+	    var resSec3 = document.getElementById("resKeyIDEAa");
+	    resSec3.value = "ASDF";
+
+	    // Apartat 4
+
+	//    var resSec4 = document.getElementById("resKeyIDEAb");
+	//    resSec4.value = "ASDF";
+
+	</script>
+	<script>
+
+
+// http://page.math.tu-berlin.de/~kant/teaching/hess/krypto-ws2006/des.htm
+	    /**
+	     * 
+	     * @param {String} key: 64 bit key
+	     * @param {function} pc1: permuted choice 1
+	     * @param {function} pc2: permuted choice 2
+	     * @param {Array} rotation: [r1, r2, r3, ..., r16] : left shifts (rotation)
+	     * @returns {Array} : [k1, k2, ..., k16 ] : 16 48-bit round keys 
+	     */
+	    function keySchedule(key, pc1, pc2, rotation) {
+
+	    }
+
+	    /*
+	     * util algorithms 
+	     */
+
+
+
+
+
+
+	    var example = {
+		message: "8787878787878787",
+		key: "0E329232EA6D0D73",
+		cipher: "0000000000000000"
+	    };
+
+	    var exampleTODO = {
+		messageClear: "Your lips are smoother than vaseline", // 38bytes // some extra padding in the tail is required
+		message: [
+		    0x596F7572206C6970,
+		    0x732061726520736D,
+		    0x6F6F746865722074,
+		    0x68616E2076617365,
+		    0x6C696E650D0A]
+	    };
+
+
+
+
+
+
+	    // read left to ---> right ... 1st 0 --> last 1
+
+	    /**
+	     * 
+	     * @param {int} key
+	     * @returns {key, parity}
+	     */
+	    function parseDESKey(key, bits) {
+		if (bits === undefined) {
+		    bits = 64;
+		}
+		// 64 bits, each 8th is parity 
+		var key56 = "";
+		var parity = "";
+
+		key.split("").forEach(function (item, idx, all) {
+
+		    if ((idx) % 8 === 0) {
+			parity += item;
+		    } else {
+			key56 += item;
+		    }
+
+
+		});
+		return {
+		    key: key56,
+		    parity: parity
+		};
+	    }
+
+	    // block-cipher -> input: xBits -> output: xBits
+
+	    function parseBinary2Int(str) {
+		return parseInt(str.match(/[01]+/g).toString().replace(/,/g, ""), 2);
+	    }
+
+	    function parseDecimal2Bin(int, bits) {
+		if (bits === undefined) {
+		    bits = 64;
+		}
+		var result = "";
+		while (int.toString(2).length < bits--) {
+		    result += "0";
+		}
+		return result + int.toString(2);
+	    }
+
+
+	    function parseBinary2BytesArr(str) {
+		var totalSize = str.split("").length;
+		var partSize = 0;
+		var result = [];
+
+		while (partSize < totalSize) {
+		    result.push(str.slice(partSize, partSize + 8));
+		    partSize += 8;
+		}
+		return result;
+	    }
+
+
+	    function appendJSON2TA(json, tv) {
+		tv.value += JSON.stringify(json).replace(/[{,}]/g, "\n");
+	    }
+
+	    console.log("How DES Works in Detail...");
+
+
+	    // data
+	    // example data
+	    var exapleSample = {
+		message: "0000000100100011010001010110011110001001101010111100110111101111",
+		messageL: "00000001001000110100010101100111",
+		messageR: "10001001101010111100110111101111",
+		key: "0001001100110100010101110111100110011011101111001101111111110001",
+		keyHexa: "133457799BBCDFF1"
+	    };
+	    
+	    exapleSample.key = deskeyString;
+
+
+	    var PC1 = [57, 49, 41, 33, 25, 17, 9,
+		1, 58, 50, 42, 34, 26, 18,
+		10, 2, 59, 51, 43, 35, 27,
+		19, 11, 3, 60, 52, 44, 36,
+		63, 55, 47, 39, 31, 23, 15,
+		7, 62, 54, 46, 38, 30, 22,
+		14, 6, 61, 53, 45, 37, 29,
+		21, 13, 5, 28, 20, 12, 4];
+
+
+	    // compute permuted key
+
+	    function permutedKey(key, pc) {
+		var keyList = key.split("");
+		var pKey = "";
+		pc.forEach(function (item, idx, all) {
+		    pKey += keyList[item - 1];
+		});
+		return pKey;
+
+	    }
+
+	    var keyParity = {key: permutedKey(exapleSample.key, PC1)};
+
+	    //  var keyParity = parseDESKey(exapleSample.key);
+	    //appendJSON2TA({permutedKey: keyParity.key}, resSec1);
+	    // cal treballar en bytes - grouping togheter every 8 bits
+
+	    function splitKeyParity(keyParity) {
+		keyParity['left'] = keyParity.key.slice(0, keyParity.key.length / 2);
+		keyParity['right'] = keyParity.key.slice(keyParity.key.length / 2, keyParity.key.length);
+		return {
+		    C0: keyParity.left,
+		    D0: keyParity.right,
+		    K0: keyParity.key
+		};
+	    }
+
+	    var keyPlus = splitKeyParity(keyParity);
+
+
+	//    appendJSON2TA(keyPlus, resSec1);
+
+	    // create 6 blocks Cn and Dn
+	    // 1 <= n <= 16
+	    // each is formet with the previous block
+	    // Cn-1 & Dn-1
+	    // following schedule of left shifts
+
+
+
+	    var LS = [1, 1, 2, 2,
+		2, 2, 2, 2,
+		1, 2, 2, 2,
+		2, 2, 2, 1];  // shits order per crear els blocks
+
+
+	    function strShiftRight(str, offset) {
+		return str.slice(-offset) + str.slice(0, -offset);
+	    }
+
+	    function strShiftLeft(str, offset) {
+		return str.slice(offset) + str.slice(0, offset);
+	    }
+
+	    function computeBlocks(c0, d0, ls) {
+		var blocks = [{
+			c: c0,
+			d: d0
+		    }];
+		ls.forEach(function (item, idx, all) {
+		    blocks.push({
+			c: strShiftLeft(blocks[idx].c, item),
+			d: strShiftLeft(blocks[idx].d, item)
+		    });
+		});
+		return blocks;
+	    }
+
+	    var blocks = computeBlocks(keyPlus.C0, keyPlus.D0, LS);
+	  //  appendJSON2TA(blocks, resSec1);
+
+
+	    //  Kn for 1 <= n <= 16
+	    // apply the permutation table to the blocks
+	    var PC2 = [14, 17, 11, 24, 1, 5,
+		3, 28, 15, 6, 21, 10,
+		23, 19, 12, 4, 26, 8,
+		16, 7, 27, 20, 13, 2,
+		41, 52, 31, 37, 47, 55,
+		30, 40, 51, 45, 33, 48,
+		44, 49, 39, 56, 34, 53,
+		46, 42, 50, 36, 29, 32];
+
+
+
+	    function permuteBlocks(blocs, pc) {
+		var result = [];
+		blocs.forEach(function (block, idx, all) {
+		    var kInit = (block.c + block.d).split("");
+		    var stub = [];
+		    pc.forEach(function (item, idx, all) {
+			stub.push(kInit[item - 1]);
+		    });
+		    result.push({idx: idx, key: stub.join("")});
+		});
+		return result;
+	    }
+
+
+	    var ks = permuteBlocks(blocks, PC2);
+
+	    appendJSON2TA( ks, resSec1);
+
+
+
+
+
+
+
+
+
+	    console.log("Step 2: Encode each 64-bit block of data.");
+
+	    var IP = [
+		58, 50, 42, 34, 26, 18, 10, 2,
+		60, 52, 44, 36, 28, 20, 12, 4,
+		62, 54, 46, 38, 30, 22, 14, 6,
+		64, 56, 48, 40, 32, 24, 16, 8,
+		57, 49, 41, 33, 25, 17, 9, 1,
+		59, 51, 43, 35, 27, 19, 11, 3,
+		61, 53, 45, 37, 29, 21, 13, 5,
+		63, 55, 47, 39, 31, 23, 15, 7
+	    ]; // initial permutation...
+
+
+	    function rearanchMsg(msg, permut) {
+		var msgPermuted = "";
+		permut.forEach(function (item) {
+		    msgPermuted += msg[item - 1];
+		});
+		return msgPermuted;
+	    }
+
+	    // demo
+	    var msg = "0000 0001 0010 0011 0100 0101 0110 0111 1000 1001 1010 1011 1100 1101 1110 1111".replace(/\s/g, "");
+	    var msgPermuted = "1100 1100 0000 0000 1100 1100 1111 1111 1111 0000 1010 1010 1111 0000 1010 1010".replace(/\s/g, "");
+
+	    var msgP = rearanchMsg(msg, IP);
+	    // lançar rutines Qunit...
+
+	    // split the IP msgPermuted into L & R
+	    var msgPRL = splitKeyParity({key: msgP});
+	    console.log(msgPRL);
+
+	    // proceed through 16 iterations... over all the blocks
+	    // magic function f
+
+	    // (+) is: XOR operation
+
+
+	    var EP = [
+		32, 1, 2, 3, 4, 5,
+		4, 5, 6, 7, 8, 9,
+		8, 9, 10, 11, 12, 13,
+		12, 13, 14, 15, 16, 17,
+		16, 17, 18, 19, 20, 21,
+		20, 21, 22, 23, 24, 25,
+		24, 25, 26, 27, 28, 29,
+		28, 29, 30, 31, 32, 1
+	    ]; // final / ending permutation
+
+	    /// ... etc lo que sigui...
+	    
+	    console.log("Apartat 2")
+
+
+	</script>
+    </body>
+</html>

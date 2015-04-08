@@ -162,8 +162,8 @@ and open the template in the editor.
 
 	    // Apartat 4
 
-	//    var resSec4 = document.getElementById("resKeyIDEAb");
-	//    resSec4.value = "ASDF";
+	    //    var resSec4 = document.getElementById("resKeyIDEAb");
+	    //    resSec4.value = "ASDF";
 
 	</script>
 	<script>
@@ -290,7 +290,10 @@ and open the template in the editor.
 		key: "0001001100110100010101110111100110011011101111001101111111110001",
 		keyHexa: "133457799BBCDFF1"
 	    };
-	    
+
+
+	    console.error("Apartat 1");
+
 	    exapleSample.key = deskeyString;
 
 
@@ -315,9 +318,9 @@ and open the template in the editor.
 		return pKey;
 
 	    }
-
+	    console.log("key:\n" + exapleSample.key);
 	    var keyParity = {key: permutedKey(exapleSample.key, PC1)};
-
+	    console.log("keyParity:\n" + keyParity.key);
 	    //  var keyParity = parseDESKey(exapleSample.key);
 	    //appendJSON2TA({permutedKey: keyParity.key}, resSec1);
 	    // cal treballar en bytes - grouping togheter every 8 bits
@@ -333,9 +336,11 @@ and open the template in the editor.
 	    }
 
 	    var keyPlus = splitKeyParity(keyParity);
+	    console.info("c0:\n" + keyPlus.C0);
+	    console.info("d0:\n" + keyPlus.D0);
 
 
-	//    appendJSON2TA(keyPlus, resSec1);
+	    //    appendJSON2TA(keyPlus, resSec1);
 
 	    // create 6 blocks Cn and Dn
 	    // 1 <= n <= 16
@@ -364,7 +369,7 @@ and open the template in the editor.
 			c: c0,
 			d: d0
 		    }];
-		ls.forEach(function (item, idx, all) {
+		ls.forEach(function (item, idx) {
 		    blocks.push({
 			c: strShiftLeft(blocks[idx].c, item),
 			d: strShiftLeft(blocks[idx].d, item)
@@ -374,8 +379,9 @@ and open the template in the editor.
 	    }
 
 	    var blocks = computeBlocks(keyPlus.C0, keyPlus.D0, LS);
-	  //  appendJSON2TA(blocks, resSec1);
-
+	    //  appendJSON2TA(blocks, resSec1);
+	    var subIdx = 1;
+	    console.log("Blocks[" + subIdx + "]:\n" + JSON.stringify(blocks[subIdx]));
 
 	    //  Kn for 1 <= n <= 16
 	    // apply the permutation table to the blocks
@@ -392,10 +398,10 @@ and open the template in the editor.
 
 	    function permuteBlocks(blocs, pc) {
 		var result = [];
-		blocs.forEach(function (block, idx, all) {
+		blocs.forEach(function (block, idx) {
 		    var kInit = (block.c + block.d).split("");
 		    var stub = [];
-		    pc.forEach(function (item, idx, all) {
+		    pc.forEach(function (item) {
 			stub.push(kInit[item - 1]);
 		    });
 		    result.push({idx: idx, key: stub.join("")});
@@ -405,11 +411,10 @@ and open the template in the editor.
 
 
 	    var ks = permuteBlocks(blocks, PC2);
-
-	    appendJSON2TA( ks, resSec1);
-
+	    console.warn("Subkey[" + subIdx + "]:\n" + JSON.stringify(ks[subIdx]));
 
 
+	    appendJSON2TA(ks, resSec1);
 
 
 
@@ -447,7 +452,7 @@ and open the template in the editor.
 
 	    // split the IP msgPermuted into L & R
 	    var msgPRL = splitKeyParity({key: msgP});
-	    console.log(msgPRL);
+	    //  console.log(msgPRL);
 
 	    // proceed through 16 iterations... over all the blocks
 	    // magic function f
@@ -467,9 +472,69 @@ and open the template in the editor.
 	    ]; // final / ending permutation
 
 	    /// ... etc lo que sigui...
-	    
-	    console.log("Apartat 2")
 
+	    console.error("Apartat 2")
+
+
+	    /*
+	     * PC de la clau primaria
+	     * ...
+	     * 
+	     */
+
+	    var currChar = "A";
+	    var endChar = "Z";
+	    var stubChar = "";
+	    var charIdx = 65;
+	    do {
+		currChar = String.fromCharCode(charIdx++);
+		stubChar += currChar;
+
+	    } while (currChar !== endChar)
+	    console.log(stubChar, stubChar.length);
+
+
+	    var keySize = 8;
+	    var checkKeyTime = 1e-6; // segons
+	    var totalCombination = Math.pow(stubChar.length, keySize);
+	    var expectedTime = checkKeyTime * totalCombination;
+	    console.log(totalCombination, parseToHMS(expectedTime)); // seconds
+
+
+	    var stubNum = "";
+	    for (var idx = 0; idx < 10; idx++)
+		stubNum += idx;
+
+	    var stubCharExtend = stubChar + stubChar.toLowerCase() + stubNum;
+	    console.log("ExtendedKey:\n", stubCharExtend, stubCharExtend.length);
+
+	    var totalCombinationExtend = Math.pow(stubCharExtend.length, keySize);
+	    var expectedTimeExtend = checkKeyTime * totalCombinationExtend;
+
+	    console.log(totalCombinationExtend, parseToHMS(expectedTimeExtend));
+
+
+	    /*
+	     * char: A-Z
+	     * size: 8
+	     */
+	    function parseToHMS(time) {
+
+		var hours = Math.floor(time / 3600);
+		var minutes = Math.floor((time % 3600) / 60);
+		var seconds = Math.floor(time % 60);
+		return {
+		    H: hours,
+		    m: minutes,
+		    s: seconds
+		};
+
+	    }
+	    
+	    // TODO bruteforce 8 keySize Checker...
+	    
+	    console.error("Apartat 3");
+	    
 
 	</script>
     </body>

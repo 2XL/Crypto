@@ -102,7 +102,7 @@ and open the template in the editor.
 
 		    <div class='form-group'>
 			<label for='resKeyIDEAa'>Result: </label>
-			<textarea class='form-control' rows='5' id='resKeyIDEAa'></textarea>
+			<textarea class='form-control' rows='20' id='resKeyIDEAa'></textarea>
 		    </div>
 		    <!--
 		    <hr>
@@ -158,7 +158,7 @@ and open the template in the editor.
 
 
 	    var resSec3 = document.getElementById("resKeyIDEAa");
-	    resSec3.value = "ASDF";
+	    //   resSec3.value = "ASDF";
 
 	    // Apartat 4
 
@@ -275,7 +275,7 @@ and open the template in the editor.
 
 
 	    function appendJSON2TA(json, tv) {
-		tv.value += JSON.stringify(json).replace(/[{,}]/g, "\n");
+		tv.value += JSON.stringify(json).replace(/[{,}\[\]]/g, "\n");
 	    }
 
 	    console.log("How DES Works in Detail...");
@@ -532,15 +532,15 @@ and open the template in the editor.
 	    }
 
 	    appendJSON2TA({
-		keyspace : stubChar,
-		keyssize : stubChar.length,
+		keyspace: stubChar,
+		keyssize: stubChar.length,
 		simple: totalCombination,
 		time: parseToHMS(expectedTime)
 	    }, resSec2);
 
 	    appendJSON2TA({
-		keyspace : stubCharExtend,
-		keyssize : stubCharExtend.length,
+		keyspace: stubCharExtend,
+		keyssize: stubCharExtend.length,
 		extend: totalCombinationExtend,
 		time: parseToHMS(expectedTimeExtend)
 	    }, resSec2);
@@ -549,22 +549,23 @@ and open the template in the editor.
 
 	    console.error("Apartat 3: International Data Encryption Algorithm");
 
-	    
-	    var ideaKEY = "01001001010001000100010101000001001000000110010101110011001000000110110001100001001000000110001101101100011000010111011001100101"
-	    
+
+	    var ideaKEY = "01001001010001000100010101000001001000000110010101110011001000000110110001100001001000000110001101101100011000010111011001100101";
+
 	    console.log("trobar 16 bits de la segona clau de la quarta iteració");
-	    
+
 	    var msg = "64bits into 4x16bits";
-	    var msgStub = ["A","B","C","D"];
+	    var msgStub = ["A", "B", "C", "D"];
 	    var subKeyStub = "K(1), ... K(52)";
+
 	    var preOperation = ["A*K(1)", "B+K(2)", "C*K(3)", "D+K(4)"];
 	    var round1 = {
 		E: "A(xor)C",
 		F: "B(xor)D"
 	    };
-	    var roundOpA = ["E'  = E*K(5)",  "F'  = E'+F"];
+	    var roundOpA = ["E'  = E*K(5)", "F'  = E'+F"];
 	    var roundOpB = ["F'' = F'*K(6)", "E'' = F''+E'"];
-	    
+
 	    var changeAC = {
 		AA: "A(xor)F''",
 		CC: "C(xor)F''"
@@ -574,14 +575,161 @@ and open the template in the editor.
 		DD: "D(xor)E''"
 	    };
 	    var swapBC = {
-		A : "AA",
-		B : "CC",
-		C : "BB",
-		D : "DD"
+		A: "AA",
+		B: "CC",
+		C: "BB",
+		D: "DD"
+	    };
+
+	    // the swapBC is not performed the last round, instead of that 
+	    // the following operation is done:
+
+	    var postOperation = ["A*K(49)", "B+K(50)", "C*K(51)", "D*K(52)"];
+
+
+	    // all of this 8 times :D
+	    // using the successive K(i to i+6) keys per iteration
+	    // 
+
+	    function subkeyStubIDEA(key) {
+		// subkey generation
+		// 1st 8 subkeys 
+		var partKey = 8;
+		var subParts = 7;
+		var K = new Array(subParts);
+		for (var idx = 0; idx < K.length; idx++) {
+
+		    K[idx] = {
+			idx: idx,
+			key: parseBinary2PartitionArr(key, partKey) // first eight subkeys
+		    };
+
+		    key = strShiftLeft(key, 25);
+		}
+		return K;
 	    }
-	    
-	    
-	    
+
+
+	    function parseBinary2PartitionArr(str, num) {
+		var totalSize = str.split("").length;
+		var partOffset = totalSize / num;
+		var partSize = 0;
+		var result = [];
+
+		while (partSize < totalSize) {
+		    result.push(str.slice(partSize, partSize + partOffset));
+		    partSize += partOffset;
+		}
+		return result;
+	    }
+
+	    var subKeys = subkeyStubIDEA(ideaKEY);
+	    var subKeyIter = 4;
+	    var subKeyIdx = 2;
+	    console.warn("Subkey K(" + subKeyIdx + ") from iter " + subKeyIter + ":\n", subKeys[subKeyIter - 1].key[subKeyIdx - 1])
+
+	    appendJSON2TA(subKeys, resSec3);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	    // comprovació
+	    var Z = [0x5a14, 0xfb3e, 0x021c, 0x79e0, 0x6081, 0x46a0, 0x117b, 0xff03];
+	    var Zbin = Z.map(function (item) {
+		return parseDecimal2Bin(item, 16);
+	    }).join("");
+	    var ZsubKeys = subkeyStubIDEA(Zbin);
+	    console.log(ZsubKeys);
+
+	    // convert to hexastring
+
+	    var ZsubKeysHexa;
+
+
+	    ZsubKeysHexa = ZsubKeys.map(function (item) {
+		return item.key.map(function (key) {
+		    return (binaryToHex(key).result);
+		});
+	    });
+
+	    console.log(ZsubKeysHexa);
+// https://books.google.es/books?id=bJJUVNGbrLsC&pg=PA76&lpg=PA76&dq=IDEA+subkey+example&source=bl&ots=sZVf_x3Nta&sig=zaEjARYldDc6rkVoBa9ZgEHZ1Ds&hl=es&sa=X&ei=9Z0kVf-QFcL4UOPpgrgL&ved=0CCQQ6AEwAA#v=onepage&q=IDEA%20subkey%20example&f=false
+
+
+
+
+	    function syntaxHighlight(json) {
+		if (typeof json !== 'string') { // check if fails
+		    json = JSON.stringify(json, undefined, 2);
+		}
+		json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+		return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+		    var cls = 'number';
+		    if (/^"/.test(match)) {
+			if (/:$/.test(match)) {
+			    cls = 'key';
+			} else {
+			    cls = 'string';
+			}
+		    } else if (/true|false/.test(match)) {
+			cls = 'boolean';
+		    } else if (/null/.test(match)) {
+			cls = 'null';
+		    }
+		    return '<span class="' + cls + '">' + match + '</span>';
+		});
+	    }
+	    function binaryToHex(s) {
+		var i, k, part, accum, ret = '';
+		for (i = s.length - 1; i >= 3; i -= 4) {
+		    // extract out in substrings of 4 and convert to hex
+		    part = s.substr(i + 1 - 4, 4);
+		    accum = 0;
+		    for (k = 0; k < 4; k += 1) {
+			if (part[k] !== '0' && part[k] !== '1') {
+			    // invalid character
+			    return {valid: false};
+			}
+			// compute the length 4 substring
+			accum = accum * 2 + parseInt(part[k], 10);
+		    }
+		    if (accum >= 10) {
+			// 'A' to 'F'
+			ret = String.fromCharCode(accum - 10 + 'A'.charCodeAt(0)) + ret;
+		    } else {
+			// '0' to '9'
+			ret = String(accum) + ret;
+		    }
+		}
+		// remaining characters, i = 0, 1, or 2
+		if (i >= 0) {
+		    accum = 0;
+		    // convert from front
+		    for (k = 0; k <= i; k += 1) {
+			if (s[k] !== '0' && s[k] !== '1') {
+			    return {valid: false};
+			}
+			accum = accum * 2 + parseInt(s[k], 10);
+		    }
+		    // 3 bits, value cannot exceed 2^3 - 1 = 7, just convert
+		    ret = String(accum) + ret;
+		}
+		return {valid: true, result: ret};
+	    }
+
 	</script>
     </body>
 </html>

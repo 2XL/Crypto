@@ -83,7 +83,7 @@ and open the template in the editor.
 
 		    <div class='form-group'>
 			<label for='resKeyDESt'>Result: </label>
-			<textarea class='form-control' rows='5' id='resKeyDESt'></textarea>
+			<textarea class='form-control' rows='10' id='resKeyDESt'></textarea>
 		    </div>
 		    <hr>
 		    <p>
@@ -153,7 +153,7 @@ and open the template in the editor.
 	    inputKeyIDEA.value = (ideakeyString1 + ideaKeyString2).replace(/,/g, "\n");
 
 	    var resSec2 = document.getElementById("resKeyDESt");
-	    resSec2.value = "ASDF";
+	    //resSec2.value = "ASDF";
 	    // Apartat 3
 
 
@@ -530,12 +530,58 @@ and open the template in the editor.
 		};
 
 	    }
-	    
-	    // TODO bruteforce 8 keySize Checker...
-	    
-	    console.error("Apartat 3");
-	    
 
+	    appendJSON2TA({
+		keyspace : stubChar,
+		keyssize : stubChar.length,
+		simple: totalCombination,
+		time: parseToHMS(expectedTime)
+	    }, resSec2);
+
+	    appendJSON2TA({
+		keyspace : stubCharExtend,
+		keyssize : stubCharExtend.length,
+		extend: totalCombinationExtend,
+		time: parseToHMS(expectedTimeExtend)
+	    }, resSec2);
+
+	    // TODO: DES bruteforce 8 keySize Checker...
+
+	    console.error("Apartat 3: International Data Encryption Algorithm");
+
+	    
+	    var ideaKEY = "01001001010001000100010101000001001000000110010101110011001000000110110001100001001000000110001101101100011000010111011001100101"
+	    
+	    console.log("trobar 16 bits de la segona clau de la quarta iteració");
+	    
+	    var msg = "64bits into 4x16bits";
+	    var msgStub = ["A","B","C","D"];
+	    var subKeyStub = "K(1), ... K(52)";
+	    var preOperation = ["A*K(1)", "B+K(2)", "C*K(3)", "D+K(4)"];
+	    var round1 = {
+		E: "A(xor)C",
+		F: "B(xor)D"
+	    };
+	    var roundOpA = ["E'  = E*K(5)",  "F'  = E'+F"];
+	    var roundOpB = ["F'' = F'*K(6)", "E'' = F''+E'"];
+	    
+	    var changeAC = {
+		AA: "A(xor)F''",
+		CC: "C(xor)F''"
+	    };
+	    var changeBD = {
+		BB: "B(xor)E''",
+		DD: "D(xor)E''"
+	    };
+	    var swapBC = {
+		A : "AA",
+		B : "CC",
+		C : "BB",
+		D : "DD"
+	    }
+	    
+	    
+	    
 	</script>
     </body>
 </html>
